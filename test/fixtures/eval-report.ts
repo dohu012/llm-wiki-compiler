@@ -33,6 +33,11 @@ export function makeEvalReport(overrides: Partial<EvalReport> = {}): EvalReport 
       claimLevelRate: 0.5,
       avgCitationsPerParagraph: 0.8,
     },
+    pageHealthDistribution: {
+      distribution: { healthy: 5, adequate: 0, needsWork: 0, broken: 0 },
+      perPage: [],
+      worstPages: [],
+    },
     stats: {
       timestamp: new Date().toISOString(),
       sourceCount: 3,

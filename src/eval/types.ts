@@ -69,6 +69,22 @@ export interface CitationDepthResult {
   avgCitationsPerParagraph: number;
 }
 
+export interface PageHealthEntry {
+  slug: string;
+  score: number;
+  tier: "healthy" | "adequate" | "needs_work" | "broken";
+  topIssues: string[];
+}
+
+export interface PageHealthDistributionResult {
+  distribution: { healthy: number; adequate: number; needsWork: number; broken: number };
+  /** Every page, sorted by score ascending (worst first). */
+  perPage: PageHealthEntry[];
+  /** Lowest-scoring N pages (same objects as perPage, just sliced). */
+  worstPages: PageHealthEntry[];
+}
+
+
 export interface CitationJudgement {
   /** First 16 hex chars of SHA-256(claimText + spanText) — stable cache key. */
   claimHash: string;
@@ -122,6 +138,7 @@ export interface EvalReport {
   citationCoverage: CitationCoverageResult;
   sourceUtilization: SourceUtilizationResult;
   citationDepth: CitationDepthResult;
+  pageHealthDistribution: PageHealthDistributionResult;
   citationSupport?: CitationSupportResult;
   stats: StatsResult;
   delta?: EvalDelta;

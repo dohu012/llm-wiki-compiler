@@ -37,7 +37,7 @@ const ERROR_RULES = new Set([
 ]);
 
 /** Compute the point deduction for a single lint result. */
-function deductionFor(result: LintResult): number {
+export function deductionFor(result: LintResult): number {
   if (ERROR_RULES.has(result.rule)) return ERROR_DEDUCTION;
   if (result.rule === "contradicted-page") return CONTRADICTED_DEDUCTION;
   return DEFAULT_DEDUCTION;
@@ -69,10 +69,15 @@ function aggregateRules(results: LintResult[]): HealthRuleResult[] {
  * health score plus per-rule breakdown.
  * @param root - Absolute path to the project root.
  */
-export async function evaluateHealth(root: string): Promise<HealthResult> {
+/**
+ * Run all 11 lint rules against the project root and return flat results.
+ * Extracted as a shared entry point so page-health-distribution can reuse
+ * the same lint pass. evaluateHealth wraps this internally to keep its
+ * API unchanged.
+ */
+export async function runAllLintRules(root: string): Promise<LintResult[]> {
   const schema = await loadSchema(root);
-
-  const allResults = (
+  return (
     await Promise.all([
       checkBrokenWikilinks(root),
       checkBrokenCitations(root),
@@ -87,7 +92,10 @@ export async function evaluateHealth(root: string): Promise<HealthResult> {
       checkSchemaCrossLinks(root, schema),
     ])
   ).flat();
+}
 
+export async function evaluateHealth(root: string): Promise<HealthResult> {
+  const allResults = await runAllLintRules(root);
   const rules = aggregateRules(allResults);
   const totalDeduction = rules.reduce((sum, r) => sum + r.deduction, 0);
   const score = Math.max(0, MAX_SCORE - totalDeduction);

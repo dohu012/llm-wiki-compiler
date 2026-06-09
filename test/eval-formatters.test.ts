@@ -42,6 +42,11 @@ function makeReport(overrides: Partial<EvalReport> = {}): EvalReport {
       claimLevelRate: 0.533,
       avgCitationsPerParagraph: 0.75,
     },
+    pageHealthDistribution: {
+      distribution: { healthy: 5, adequate: 0, needsWork: 0, broken: 0 },
+      perPage: [],
+      worstPages: [],
+    },
     stats: {
       timestamp: "2026-05-23T10:30:00.000Z",
       sourceCount: 5,
